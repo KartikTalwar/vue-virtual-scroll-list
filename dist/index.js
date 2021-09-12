@@ -7,10 +7,50 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vue')) :
   typeof define === 'function' && define.amd ? define(['vue'], factory) :
-  (global = global || self, global.VirtualList = factory(global.Vue));
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.VirtualList = factory(global.Vue));
 }(this, (function (Vue) { 'use strict';
 
-  Vue = Vue && Object.prototype.hasOwnProperty.call(Vue, 'default') ? Vue['default'] : Vue;
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var Vue__default = /*#__PURE__*/_interopDefaultLegacy(Vue);
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+
+      if (enumerableOnly) {
+        symbols = symbols.filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        });
+      }
+
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -49,40 +89,6 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
   function _toConsumableArray(arr) {
     return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
@@ -92,7 +98,7 @@
   }
 
   function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
   }
 
   function _unsupportedIterableToArray(o, minLen) {
@@ -100,7 +106,7 @@
     if (typeof o === "string") return _arrayLikeToArray(o, minLen);
     var n = Object.prototype.toString.call(o).slice(8, -1);
     if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Map" || n === "Set") return Array.from(o);
     if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
   }
 
@@ -594,6 +600,12 @@
     extraProps: {
       type: Object
     },
+    forceUpdate: {
+      type: Boolean,
+      "default": function _default() {
+        return false;
+      }
+    },
     scopedSlots: {
       type: Object
     }
@@ -643,12 +655,14 @@
       },
       // tell parent current size identify by unqiue key
       dispatchSizeChange: function dispatchSizeChange() {
-        this.$parent.$emit(this.event, this.uniqueKey, this.getCurrentSize(), this.hasInitial);
+        if (this.forceUpdate) {
+          this.$parent.$emit(this.event, this.uniqueKey, this.getCurrentSize(), this.hasInitial);
+        }
       }
     }
   }; // wrapping for item
 
-  var Item = Vue.component('virtual-list-item', {
+  var Item = Vue__default['default'].component('virtual-list-item', {
     mixins: [Wrapper],
     props: ItemProps,
     render: function render(h) {
@@ -663,7 +677,7 @@
           uniqueKey = this.uniqueKey,
           slotComponent = this.slotComponent;
 
-      var props = _objectSpread2({}, extraProps, {
+      var props = _objectSpread2(_objectSpread2({}, extraProps), {}, {
         source: source,
         index: index
       });
@@ -684,7 +698,7 @@
     }
   }); // wrapping for slot
 
-  var Slot = Vue.component('virtual-list-slot', {
+  var Slot = Vue__default['default'].component('virtual-list-slot', {
     mixins: [Wrapper],
     props: SlotProps,
     render: function render(h) {
@@ -711,7 +725,7 @@
     // string value also use for aria role attribute
     FOOTER: 'tfoot'
   };
-  var VirtualList = Vue.component('virtual-list', {
+  var VirtualList = Vue__default['default'].component('virtual-list', {
     props: VirtualProps,
     data: function data() {
       return {
