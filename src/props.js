@@ -136,6 +136,10 @@ export const ItemProps = {
   extraProps: {
     type: Object
   },
+  forceUpdate: {
+    type: Boolean,
+    default () { return false }
+  },
   scopedSlots: {
     type: Object
   }
